@@ -249,12 +249,20 @@ class BrowserViewController: UIViewController {
 
             if self.context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &biometricError) {
                 self.context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: self.context.localizedReason) {
-                    [unowned self] (success, _) in
+                    [unowned self] (success, error) in
                     DispatchQueue.main.async {
                         if success {
                             self.showToolbars()
                             self.appSplashController.toggleSplashView(hide: true)
                         } else {
+                            // Early return if the user cancelled
+                            if let error = error as? LAError, error.code == .userCancel {
+                                print(error.code.rawValue)
+                                print("user cancelled")
+                                AppDelegate.needsAuthenticated = true
+                                return
+                            }
+                            
                             // Clear the browser session, as the user failed to authenticate
                             self.resetBrowser(hidePreviousSession: true)
                             self.appSplashController.toggleSplashView(hide: true)
