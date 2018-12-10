@@ -362,6 +362,43 @@ class ScrollViewController: UIPageViewController, PageControlDelegate {
             make.centerX.equalTo(introView)
         }
         orderedViewControllers.append(viewController)
+        if title ==  UIConstants.strings.CardTitleHistory {
+            let blockAdsButton = UIButton()
+            introView.addSubview(blockAdsButton)
+            blockAdsButton.accessibilityIdentifier = "blockAdsOnboardingButton"
+            blockAdsButton.setTitle(nil, for: .normal)
+            blockAdsButton.snp.makeConstraints { constraints in
+                constraints.centerX.equalTo(introView)
+                constraints.leading.equalTo(introView).offset(24)
+                constraints.trailing.equalTo(introView).inset(24)
+                constraints.top.equalTo(textLabel.snp.bottom).offset(8)
+                constraints.height.equalTo(56)
+                cardButton.snp.makeConstraints { constraints in
+                    constraints.top.equalTo(blockAdsButton.snp.bottom).offset(14)
+                }
+            }
+            let blockAdsTitle = UILabel()
+            blockAdsTitle.text = "Block Ads"
+            blockAdsTitle.textAlignment = .right
+            blockAdsTitle.textColor = UIConstants.colors.firstRunMessage
+            blockAdsTitle.font = UIConstants.fonts.firstRunMessage
+            blockAdsButton.addSubview(blockAdsTitle)
+            blockAdsTitle.snp.makeConstraints { (constraints) in
+                constraints.centerY.equalTo(blockAdsButton.snp.centerY)
+                constraints.leading.equalTo(blockAdsButton.snp.leading)
+                constraints.trailing.equalTo(blockAdsButton.snp.centerXWithinMargins)
+            }
+    
+            let blockAdsSwitch = UISwitch()
+            blockAdsButton.addSubview(blockAdsSwitch)
+            blockAdsSwitch.isOn = false
+            blockAdsSwitch.onTintColor = UIConstants.colors.toggleOn
+            blockAdsSwitch.snp.makeConstraints { (constraints) in
+                constraints.leading.equalTo(blockAdsTitle.snp.trailing).offset(14)
+                constraints.trailing.equalToSuperview()
+                constraints.centerY.equalToSuperview()
+            }
+        }
     }
 
     @objc func didTapStartBrowsingButton() {
