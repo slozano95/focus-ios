@@ -18,6 +18,9 @@ class HomeView: UIView {
     private let trackerStatsLabel = SmartLabel()
     private let tipTitleLabel = SmartLabel()
     private let tipDescriptionLabel = SmartLabel()
+    private let blockAdsButton = UIButton()
+    private let blockAdsTitle = SmartLabel()
+    private let blockAdsSwitch = UISwitch()
     private let shieldLogo = UIImageView()
 
     let toolbar = HomeViewToolbar()
@@ -81,7 +84,21 @@ class HomeView: UIView {
         trackerStatsShareButton.layer.borderWidth = 1.0
         trackerStatsShareButton.layer.cornerRadius = 4
         tipView.addSubview(trackerStatsShareButton)
-
+        
+        tipView.addSubview(blockAdsButton)
+        blockAdsButton.accessibilityIdentifier = "blockAdsTipButton"
+        blockAdsButton.setTitle(nil, for: .normal)
+        
+        blockAdsTitle.text = "Block Ads"
+        blockAdsTitle.textAlignment = .right
+        blockAdsTitle.textColor = UIConstants.colors.defaultFont
+        blockAdsTitle.font = UIConstants.fonts.shareTrackerStatsLabel
+        blockAdsButton.addSubview(blockAdsTitle)
+        
+        blockAdsButton.addSubview(blockAdsSwitch)
+        blockAdsSwitch.isOn = false
+        blockAdsSwitch.onTintColor = UIConstants.colors.toggleOn
+        
         textLogo.snp.makeConstraints { make in
             make.centerX.equalTo(self)
             make.top.equalTo(snp.centerY).offset(UIConstants.layout.textLogoOffset)
@@ -104,17 +121,37 @@ class HomeView: UIView {
             make.width.greaterThanOrEqualTo(280)
             make.width.lessThanOrEqualToSuperview().offset(-32)
         }
-
+        
         tipDescriptionLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview()
         }
-
+        
         tipTitleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(tipDescriptionLabel.snp.top).offset(-UIConstants.layout.homeViewTextOffset)
         }
 
+        blockAdsButton.snp.makeConstraints { make in
+            make.centerX.equalTo(tipView)
+            make.leading.equalTo(tipView).offset(24)
+            make.trailing.equalTo(tipView).inset(24)
+            make.top.equalTo(tipDescriptionLabel.snp.bottom)
+            make.height.equalTo(56).priority(250)
+            make.bottom.equalToSuperview()
+        }
+        
+        blockAdsTitle.snp.makeConstraints { make in
+            make.centerY.equalTo(blockAdsButton.snp.centerY)
+            make.leading.equalTo(blockAdsButton.snp.leading)
+            make.trailing.equalTo(blockAdsButton.snp.centerXWithinMargins)
+        }
+        
+        blockAdsSwitch.snp.makeConstraints { make in
+            make.leading.equalTo(blockAdsTitle.snp.trailing).offset(14)
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+        
         toolbar.snp.makeConstraints { make in
             make.bottom.equalToSuperview()
             make.width.equalToSuperview().priority(.required)
@@ -145,6 +182,7 @@ class HomeView: UIView {
             switch tip.identifier {
             case TipManager.TipKey.shareTrackersTip:
                 hideTextTip()
+                hideBlockAdsButton()
                 let numberOfTrackersBlocked = UserDefaults.standard.integer(forKey: BrowserViewController.userDefaultsTrackersBlockedKey)
                 showTrackerStatsShareButton(text: String(format: tip.title, String(numberOfTrackersBlocked)))
                 Telemetry.default.recordEvent(category: TelemetryEventCategory.action, method: TelemetryEventMethod.show, object: TelemetryEventObject.trackerStatsShareButton)
@@ -173,7 +211,11 @@ class HomeView: UIView {
         trackerStatsShareButton.isHidden = false
         shieldLogo.isHidden = false
     }
-
+    
+    func hideBlockAdsButton() {
+        blockAdsButton.isHidden = true
+    }
+    
     func hideTrackerStatsShareButton() {
         shieldLogo.isHidden = true
         trackerStatsLabel.isHidden = true
